@@ -13,6 +13,8 @@
 启动成功后访问 http://localhost:8080/
 ### 界面
 随便做了个界面，能用就行的原则。
+https://github.com/lxyoucan/gemini-pro/blob/main/doc/screenshot.png
 
+![image](https://github.com/lxyoucan/gemini-pro/blob/main/doc/screenshot.png)
 ### 感谢
 Gemini Pro 

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Gemini Pro AI聊天</title>
+    <!-- 添加Viewport Meta标签 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 引入 Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 引入 marked.js 库 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        /* 通过CSS调整按钮大小 */
+        .btn {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <!-- 使用 textarea 元素作为输入框 -->
+    <div class="input-group mb-3">
+        <textarea class="form-control" placeholder="输入您的消息..." aria-label="输入您的消息..." id="message-input" rows="3"></textarea>
+        <button class="btn btn-primary" type="button" id="send-button">发送</button>
+        <button class="btn btn-danger" type="button" id="clear-button">清除</button>
+    </div>
+
+
+
+    <!-- 加载动画 -->
+    <div class="d-none justify-content-center align-items-center mb-3" id="loading">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">加载中...</span>
+        </div>
+        <span class="ms-2">思考中...</span>
+    </div>
+
+    <!-- Gemini Pro AI聊天展示区域 -->
+    <div class="mb-3 border p-3" id="markdown-display">
+        <!-- 这里将显示 Gemini Pro AI聊天 内容 -->
+    </div>
+
+
+    <!-- 底部版权信息 -->
+    <div class="copyright">
+        <p>作者：ITKEY</p>
+        <p>版权所有 © 2023 Gemini Pro AI聊天</p>
+    </div>
+</div>
+
+
+
+<!-- 引入 Bootstrap JS（如果需要） -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const markdownDisplay = document.getElementById('markdown-display');
+    const messageInput = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-button');
+    const clearButton = document.getElementById('clear-button');
+    const loading = document.getElementById('loading');
+
+    // 发送消息功能
+    function sendMessage() {
+        const messageText = messageInput.value;
+
+        // 显示加载动画
+        loading.classList.remove('d-none');
+
+        // 将用户输入的内容以 Markdown 格式添加到展示区域
+        markdownDisplay.innerHTML += marked.parse(`**您：** ${messageText}`) + '<hr>';
+
+        // 创建 XMLHttpRequest 对象
+        const xhr = new XMLHttpRequest();
+
+        // 设置请求的方法和地址
+        xhr.open('POST', '/api/chat/msg', true);
+
+        // 设置请求头
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+        // 处理请求完成后的操作
+        xhr.onload = function() {
+            // 隐藏加载动画
+            loading.classList.add('d-none');
+
+            if (xhr.status === 200) {
+                const responseText = xhr.responseText;
+
+                // 将返回的 Markdown 内容显示在展示区域
+                markdownDisplay.innerHTML += marked.parse(responseText) + '<hr>';
+            } else {
+                // 如果请求失败，显示错误信息
+                markdownDisplay.innerHTML += '<p>获取 Gemini Pro AI聊天 内容失败。</p>';
+            }
+        };
+
+        // 发送请求
+        xhr.send(`text=${encodeURIComponent(messageText)}`);
+
+        // 清空输入框内容
+        messageInput.value = '';
+    }
+
+    // 点击发送按钮发送消息
+    sendButton.addEventListener('click', sendMessage);
+
+    // 点击清除按钮清空消息展示区域内容
+    clearButton.addEventListener('click', function() {
+        markdownDisplay.innerHTML = '';
+    });
+
+    // 监听输入框的键盘事件
+    messageInput.addEventListener('keypress', function(event) {
+        // 判断按下的键是否为回车键（键码为13）
+        if (event.keyCode === 13) {
+            // 阻止默认的回车键行为（防止在输入框输入回车后换行）
+            event.preventDefault();
+
+            // 调用发送消息的功能
+            sendMessage();
+        }
+    });
+</script>
+</body>
+</html>
